@@ -1,0 +1,38 @@
+{
+  "Intro": {
+    "title1": "Title 1",
+    "description1": "Description 1",
+    "title2": "Title 2",
+    "description2": "Description 2",
+    "title3": "Title 3",
+    "description3": "Description 3",
+    "skip": "Skip"
+  },
+
+  "Home": {
+    "title": "Home"
+  },
+
+  "Profile": {
+    "title": "Profile"
+  },
+
+  "Settings": {
+    "title": "Settings"
+  },
+
+  "Drawer": {
+    "changeLanguage": "Sprache Andern"
+  },
+
+  "BottomTab": {
+    "search": "Suche",
+    "home": "Home",
+    "profile": "Profil"
+  },
+
+  "Component": {
+    "continueWithFacebook": "Login mit Facebook",
+    "continueWithGoogle": "Login mit Google"
+  }
+}

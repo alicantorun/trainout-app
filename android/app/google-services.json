@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "325900303912",
+    "project_id": "trainout-f6a49",
+    "storage_bucket": "trainout-f6a49.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:325900303912:android:e60c4ce318ab5739733f1d",
+        "android_client_info": {
+          "package_name": "com.trainout"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "325900303912-fb2nsfsfjs3o4o95k6sfbq9un9aajn48.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.trainout",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "325900303912-7s7c58iahbcm94isl3m28kjg30dr0raa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyOJHssRoSYCnXpU3hd3AeU6OJ5imHrF4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "325900303912-7s7c58iahbcm94isl3m28kjg30dr0raa.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "325900303912-vqheheki429mnrrik49innd5ff95hup6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.trainout"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

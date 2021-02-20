@@ -37,6 +37,7 @@ export interface Screens {
   drawerStack: string;
   bottomTabStack: string;
   chatroom: string;
+  chatroomStack: string;
   chatroomHome: string;
   createChatroom: string;
 }

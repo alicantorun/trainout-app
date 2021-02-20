@@ -13,6 +13,7 @@ const screens: Screens = {
   appStack: 'AppStack',
   drawerStack: 'DrawerStack',
   bottomTabStack: 'BottomTabStack',
+  chatroomStack: 'ChatroomStack',
   chatroom: 'Chatroom',
   chatroomHome: 'ChatroomHome',
   createChatroom: 'CreateChatroom',

@@ -1,40 +1,58 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { all, call, fork, put, take } from 'redux-saga/effects';
+import { all, fork, put, take } from 'redux-saga/effects';
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-community/google-signin';
 import { Alert } from 'react-native';
 import * as Actions from './actions';
-import * as RootNavigation from '../../RootNavigation';
-import { screens } from '../../config';
-
-import { login, register } from './api';
 
 GoogleSignin.configure({
   webClientId: '325900303912-7s7c58iahbcm94isl3m28kjg30dr0raa.apps.googleusercontent.com',
 });
 
 function* loginSaga({ payload }) {
+  const { email, password } = payload;
+  yield auth().signOut();
   try {
-    const response = yield call(login, payload);
-    if (response.success) {
-      AsyncStorage.setItem('@token', response.success.token);
+    const result = yield auth().signInWithEmailAndPassword(email, password);
 
-      const user = {
-        ...response.user,
-      };
+    const user = result.user;
+    let user_uid = user.uid;
 
-      const token = { token: response.success.token };
+    AsyncStorage.setItem('@loggedInUserID:id', user_uid);
+    AsyncStorage.setItem('@loggedInUserID:key', email);
+    AsyncStorage.setItem('@loggedInUserID:password', password);
 
-      yield put(Actions.login.success({ user, token }));
-    }
-  } catch (err) {
     yield put(
-      Actions.login.failure({
-        error: err ? err : 'User login failed!',
+      Actions.login.success({
+        user: user,
+        // token: accessToken,
       }),
     );
+
+    // RootNavigation.navigate(screens.drawerStack);
+  } catch (error) {
+    Alert.alert(error);
+    yield put(
+      Actions.login.failure({
+        error: error ? error : 'User login failed!',
+      }),
+    );
+  }
+}
+
+function* logoutSaga() {
+  try {
+    yield auth().signOut();
+
+    AsyncStorage.setItem('@loggedInUserID:id', null);
+    AsyncStorage.setItem('@loggedInUserID:key', null);
+    AsyncStorage.setItem('@loggedInUserID:password', null);
+
+    // RootNavigation.navigate(screens.drawerStack);
+  } catch (error) {
+    Alert.alert(error);
   }
 }
 
@@ -75,19 +93,16 @@ function* facebookLoginSaga({}) {
     yield put(
       Actions.facebookLogin.success({
         user: user,
-        token: accessToken,
+        // token: accessToken,
       }),
     );
-    // this.props.navigation.dispatch({
-    //   type: 'Login',
-    //   user: userDict,
-    // });
+
     // navigation.navigate('DrawerStack', { screen: 'Home' });
-    RootNavigation.navigate(screens.drawerStack);
-  } catch (err) {
+    // RootNavigation.navigate(screens.drawerStack);
+  } catch (error) {
     yield put(
       Actions.facebookLogin.failure({
-        error: err ? err : 'User login failed!',
+        error: error ? error : 'User login failed!',
       }),
     );
   }
@@ -119,36 +134,41 @@ function* googleLoginSaga({}) {
     yield put(
       Actions.googleLogin.success({
         user: user,
-        token: idToken,
+        // token: idToken,
       }),
     );
-    // this.props.navigation.navigate('DrawerStack', {
-    //   screen: 'Home',
-    // });
+
     // navigation.navigate('')
-  } catch (err) {
+  } catch (error) {
     yield put(
       Actions.googleLogin.failure({
-        error: err ? err : 'User login failed!',
+        error: error ? error : 'User login failed!',
       }),
     );
   }
 }
 
 function* registerSaga({ payload }) {
+  const { email, password } = payload;
   try {
-    const response = yield call(register, payload);
-    if (response.success) {
-      AsyncStorage.setItem('@token', response.success.token);
+    const result = yield auth().createUserWithEmailAndPassword(email, password);
 
-      const user = {
-        ...response.user,
-      };
+    const user = result.user;
 
-      const token = { token: response.success.token };
+    AsyncStorage.setItem('@loggedInUserID:id', user.uid);
+    AsyncStorage.setItem('@loggedInUserID:key', email);
+    AsyncStorage.setItem('@loggedInUserID:password', password);
 
-      yield put(Actions.register.success({ user, token }));
-    }
+    // const userDict = {
+    //   id: user.uid,
+    //   fullname: fullname,
+    //   email: email,
+    //   photoURL: user.photoURL,
+    // };
+
+    // firestore().collection('users').doc(user.uid).set(userDict);
+
+    yield put(Actions.register.success({ user }));
   } catch (error) {
     yield put(
       Actions.register.failure({
@@ -157,13 +177,20 @@ function* registerSaga({ payload }) {
     );
   }
 }
-
 function* watchLogin() {
   while (true) {
     const action = yield take(Actions.login.request);
     yield* loginSaga(action);
   }
 }
+
+function* watchRegister() {
+  while (true) {
+    const action = yield take(Actions.register.request);
+    yield* registerSaga(action);
+  }
+}
+
 function* watchFacebookLogin() {
   while (true) {
     const action = yield take(Actions.facebookLogin.request);
@@ -176,14 +203,19 @@ function* watchGoogleLogin() {
     yield* googleLoginSaga(action);
   }
 }
-
-function* watchRegister() {
+function* watchLogout() {
   while (true) {
-    const action = yield take(Actions.register.request);
-    yield* registerSaga(action);
+    yield take(Actions.logout);
+    yield* logoutSaga();
   }
 }
 
 export default function* () {
-  yield all([fork(watchLogin), fork(watchFacebookLogin), fork(watchGoogleLogin), fork(watchRegister)]);
+  yield all([
+    fork(watchLogin),
+    fork(watchLogout),
+    fork(watchFacebookLogin),
+    fork(watchGoogleLogin),
+    fork(watchRegister),
+  ]);
 }

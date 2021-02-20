@@ -7,9 +7,12 @@ import RNRestart from 'react-native-restart';
 import { drawerIcons } from '../../helpers';
 import { images } from '../../constants';
 import styles from './drawer.styles';
+import { useDispatch } from 'react-redux';
+import * as AuthActions from '../../entities/auth/actions';
 
 function Drawer(props) {
   const [t, i18n] = useTranslation();
+  const dispatch = useDispatch();
 
   const i18 = (key) => {
     return t(key);
@@ -44,10 +47,11 @@ function Drawer(props) {
     <SafeAreaView style={styles.container}>
       <FastImage source={images.icon} style={styles.image} />
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <TouchableOpacity style={styles.itemContainer} onPress={() => changeLanguageWithRTL()}>
+        <TouchableOpacity style={styles.itemContainer} onPress={() => changeLanguageWithoutRTL()}>
           {drawerIcons.language}
           <Text style={styles.itemText}>{i18('Drawer.changeLanguage')}</Text>
         </TouchableOpacity>
+        <Text onPress={() => dispatch(AuthActions.logout())}>LOGOUT</Text>
       </ScrollView>
     </SafeAreaView>
   );

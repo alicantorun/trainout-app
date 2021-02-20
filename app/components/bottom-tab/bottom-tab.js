@@ -15,9 +15,9 @@ function BottomTab(props) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.tab} onPress={() => props.navigation.navigate(screens.settings)}>
+      <TouchableOpacity style={styles.tab} onPress={() => props.navigation.navigate(screens.profile)}>
         {tabIcons.search}
-        <Text style={styles.tabText}>{i18('BottomTab.search')}</Text>
+        <Text style={styles.tabText}>{i18('BottomTab.profile')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.tab} onPress={() => props.navigation.navigate(screens.home)}>
@@ -25,9 +25,9 @@ function BottomTab(props) {
         <Text style={styles.tabText}>{i18('BottomTab.home')}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.tab} onPress={() => props.navigation.navigate(screens.profile)}>
+      <TouchableOpacity style={styles.tab} onPress={() => props.navigation.navigate(screens.chatroomStack)}>
         {tabIcons.profile}
-        <Text style={styles.tabText}>{i18('BottomTab.profile')}</Text>
+        <Text style={styles.tabText}>{i18('BottomTab.chat')}</Text>
       </TouchableOpacity>
     </View>
   );

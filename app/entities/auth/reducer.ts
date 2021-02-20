@@ -59,7 +59,22 @@ export default function (state = initialState, action: Actions.AuthActions) {
         user: null,
         token: null,
       };
-
+    case getType(Actions.facebookLogin.success):
+      return {
+        ...state,
+        pending: false,
+        error: null,
+        user: action.payload.user,
+        token: action.payload.token,
+      };
+    case getType(Actions.googleLogin.success):
+      return {
+        ...state,
+        pending: false,
+        error: null,
+        user: action.payload.user,
+        token: action.payload.token,
+      };
     default:
       return state;
   }

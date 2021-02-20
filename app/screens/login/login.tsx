@@ -2,63 +2,34 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { StyleSheet, Text, TextInput, View, Alert, ActivityIndicator } from 'react-native';
+import { Text, TextInput, View, Alert, ActivityIndicator } from 'react-native';
 import Button from 'react-native-button';
 // import { AppStyles } from '../AppStyles';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import { GoogleSignin, GoogleSigninButton } from '@react-native-community/google-signin';
-import { AsyncStorage } from 'react-native';
-const FBSDK = require('react-native-fbsdk');
+import { GoogleSigninButton } from '@react-native-community/google-signin';
 
-import { facebookLogin, googleLogin } from '../../entities/auth/actions';
+import { facebookLogin, googleLogin, login } from '../../entities/auth/actions';
 
 import { useNavigation } from '@react-navigation/core';
-import { Screen, enableScreens } from 'react-native-screens';
-
-import { screens } from '../../config';
+import { enableScreens } from 'react-native-screens';
 
 import styles from './login.styles';
 
 enableScreens();
 
-const { LoginManager, AccessToken } = FBSDK;
-
-const LoginScreen = (props) => {
-  const navigation = useNavigation();
+const LoginScreen = () => {
   const dispatch = useDispatch();
 
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  const onLoginButtonPress = async () => {
-    // TODO
-    // props.navigation.navigate(screens.drawerStack);
-
-    // return;
-
+  const onLoginButtonPress = () => {
     if (email.length <= 0 || password.length <= 0) {
       Alert.alert('Please fill out the required fields.');
       return;
     }
 
-    try {
-      const result = await auth().signInWithEmailAndPassword(email, password);
-      const user = result.user;
-      let user_uid = user.uid;
-      AsyncStorage.setItem('@loggedInUserID:id', user_uid);
-      AsyncStorage.setItem('@loggedInUserID:key', email);
-      AsyncStorage.setItem('@loggedInUserID:password', password);
-
-      // navigation.dispatch({
-      //   type: 'Login',
-      //   user,
-      // });
-      // navigation.navigate('')
-    } catch (error) {
-      Alert.alert('Please try again! ' + error);
-    }
+    dispatch(login.request({ email, password }));
   };
 
   const onFacebookButtonPress = () => {

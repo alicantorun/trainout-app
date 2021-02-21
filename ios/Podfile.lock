@@ -507,15 +507,15 @@ PODS:
   - JWT (3.0.0-beta.12):
     - Base64 (~> 1.1.2)
   - leveldb-library (1.22)
-  - libwebp (1.1.0):
-    - libwebp/demux (= 1.1.0)
-    - libwebp/mux (= 1.1.0)
-    - libwebp/webp (= 1.1.0)
-  - libwebp/demux (1.1.0):
+  - libwebp (1.2.0):
+    - libwebp/demux (= 1.2.0)
+    - libwebp/mux (= 1.2.0)
+    - libwebp/webp (= 1.2.0)
+  - libwebp/demux (1.2.0):
     - libwebp/webp
-  - libwebp/mux (1.1.0):
+  - libwebp/mux (1.2.0):
     - libwebp/demux
-  - libwebp/webp (1.1.0)
+  - libwebp/webp (1.2.0)
   - nanopb (2.30907.0):
     - nanopb/decode (= 2.30907.0)
     - nanopb/encode (= 2.30907.0)
@@ -1164,7 +1164,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
-  libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
+  libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
   nanopb: 59221d7f958fb711001e6a449489542d92ae113e
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
   Permission-Camera: 119b01de97a5b3edb637999e38476b68143b9d17
@@ -1222,6 +1222,6 @@ SPEC CHECKSUMS:
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 871d84af01bc3a2df4d2528b7874390eaf123368
+PODFILE CHECKSUM: 37daf148722215b6fb41a22021cae037cbc5582e
 
 COCOAPODS: 1.10.1

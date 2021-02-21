@@ -10,7 +10,9 @@ target 'trainout' do
   pod 'GoogleMaps'
   pod 'Google-Maps-iOS-Utils'
 
-  # react-native-vecto
+  # react-native-vector
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
   
   config = use_native_modules!
 

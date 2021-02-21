@@ -1,27 +1,41 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import { applyMiddleware, createStore } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
+import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web and AsyncStorage for react-native
+// import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'; //TODO decide for reconciliation later
+
 // Imports: Redux Root Reducer
 import { rootReducer } from '../reducers';
+
 // Imports: Redux Root Saga
 import rootSaga from '../sagas';
 
-const persistConfig = {
-  key: 'root',
-  storage: AsyncStorage,
-  blacklist: ['loading'],
-};
+// add the middlewares
+const middlewares = [];
 
 // Middleware: Redux Saga
 const sagaMiddleware = createSagaMiddleware();
+middlewares.push(sagaMiddleware);
+
+// apply the middleware
+const middleware = applyMiddleware(...middlewares);
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  blacklist: ['loading'],
+};
+
 //persist
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Redux: Store
-const store = createStore(persistedReducer, applyMiddleware(sagaMiddleware));
+const store = createStore(persistedReducer, composeWithDevTools(middleware));
 let persistor = persistStore(store);
+
 // Middleware: Redux Saga
 sagaMiddleware.run(rootSaga);
+
 // Exports
 export { store, persistor };

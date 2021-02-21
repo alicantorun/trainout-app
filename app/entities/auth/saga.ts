@@ -6,6 +6,7 @@ import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-community/google-signin';
 import { Alert } from 'react-native';
 import * as Actions from './actions';
+import * as RootNavigation from '../../RootNavigation';
 
 GoogleSignin.configure({
   webClientId: '325900303912-7s7c58iahbcm94isl3m28kjg30dr0raa.apps.googleusercontent.com',

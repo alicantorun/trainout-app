@@ -2,15 +2,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-shadow */
 import React from 'react';
-import {StyleSheet, Text, TextInput, View, Alert} from 'react-native';
+import { StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import Button from 'react-native-button';
-import {AppStyles} from '../AppStyles';
+import { AppStyles } from '../AppStyles';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-import {useNavigation} from '@react-navigation/core';
-import {AsyncStorage} from 'react-native';
-import {User} from '../interfaces/interfaces';
+import { useNavigation } from '@react-navigation/core';
+import AsyncStorage from '@react-native-community/async-storage';
+import { User } from '../interfaces/interfaces';
 
 const SignupScreen: React.FC = (props) => {
   const navigation = useNavigation();
@@ -37,10 +37,7 @@ const SignupScreen: React.FC = (props) => {
 
   const onRegisterButtonPressed = async () => {
     try {
-      const result = await auth().createUserWithEmailAndPassword(
-        email,
-        password,
-      );
+      const result = await auth().createUserWithEmailAndPassword(email, password);
 
       const user = result.user;
 
@@ -111,7 +108,7 @@ const SignupScreen: React.FC = (props) => {
         />
       </View>
       <Button
-        containerStyle={[styles.facebookContainer, {marginTop: 50}]}
+        containerStyle={[styles.facebookContainer, { marginTop: 50 }]}
         style={styles.facebookText}
         onPress={() => onRegisterButtonPressed()}>
         Register

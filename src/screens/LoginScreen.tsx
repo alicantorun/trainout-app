@@ -1,35 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, View, Alert, ActivityIndicator } from 'react-native';
 import Button from 'react-native-button';
-import {AppStyles} from '../AppStyles';
+import { AppStyles } from '../AppStyles';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-} from '@react-native-community/google-signin';
-import {AsyncStorage} from 'react-native';
+import { GoogleSignin, GoogleSigninButton } from '@react-native-community/google-signin';
+import AsyncStorage from '@react-native-community/async-storage';
 const FBSDK = require('react-native-fbsdk');
 
-import {useNavigation} from '@react-navigation/core';
-import {Screen, enableScreens} from 'react-native-screens';
+import { useNavigation } from '@react-navigation/core';
+import { Screen, enableScreens } from 'react-native-screens';
 
 enableScreens();
 
-const {LoginManager, AccessToken} = FBSDK;
+const { LoginManager, AccessToken } = FBSDK;
 
 GoogleSignin.configure({
-  webClientId:
-    '325900303912-7s7c58iahbcm94isl3m28kjg30dr0raa.apps.googleusercontent.com',
+  webClientId: '325900303912-7s7c58iahbcm94isl3m28kjg30dr0raa.apps.googleusercontent.com',
 });
 
 const LoginScreen: React.FC = (props) => {
@@ -65,31 +54,23 @@ const LoginScreen: React.FC = (props) => {
 
   const onFacebookButtonPress = async () => {
     try {
-      const result = await LoginManager.logInWithPermissions([
-        'public_profile',
-        'email',
-      ]);
+      const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
 
       if (result.isCancelled) {
         Alert.alert('Whoops!', 'You cancelled the sign in.');
       }
 
-      const {accessToken} = await AccessToken.getCurrentAccessToken();
+      const { accessToken } = await AccessToken.getCurrentAccessToken();
 
       if (!accessToken) {
         throw 'Something went wrong obtaining access token';
       }
 
-      const facebookCredential = auth.FacebookAuthProvider.credential(
-        accessToken,
-      );
+      const facebookCredential = auth.FacebookAuthProvider.credential(accessToken);
 
-      const {user} = await auth().signInWithCredential(facebookCredential);
+      const { user } = await auth().signInWithCredential(facebookCredential);
 
-      AsyncStorage.setItem(
-        '@loggedInUserID:facebookCredentialAccessToken',
-        accessToken,
-      );
+      AsyncStorage.setItem('@loggedInUserID:facebookCredentialAccessToken', accessToken);
       AsyncStorage.setItem('@loggedInUserID:id', user.uid);
       const userDict = {
         id: user.uid,
@@ -106,7 +87,7 @@ const LoginScreen: React.FC = (props) => {
       //   type: 'Login',
       //   user: userDict,
       // });
-      navigation.navigate('DrawerStack', {screen: 'Home'});
+      navigation.navigate('DrawerStack', { screen: 'Home' });
     } catch (error) {
       Alert.alert('Please try again! ' + error);
     }
@@ -114,16 +95,13 @@ const LoginScreen: React.FC = (props) => {
 
   const onGoogleButtonPress = async () => {
     try {
-      const {idToken} = await GoogleSignin.signIn();
+      const { idToken } = await GoogleSignin.signIn();
 
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
-      AsyncStorage.setItem(
-        '@loggedInUserID:googleCredentialAccessToken',
-        idToken,
-      );
+      AsyncStorage.setItem('@loggedInUserID:googleCredentialAccessToken', idToken);
 
-      const {user} = await auth().signInWithCredential(googleCredential);
+      const { user } = await auth().signInWithCredential(googleCredential);
 
       AsyncStorage.setItem('@loggedInUserID:id', user.uid);
       const userDict = {
@@ -170,10 +148,7 @@ const LoginScreen: React.FC = (props) => {
           underlineColorAndroid="transparent"
         />
       </View>
-      <Button
-        containerStyle={styles.loginContainer}
-        style={styles.loginText}
-        onPress={() => onLoginButtonPress()}>
+      <Button containerStyle={styles.loginContainer} style={styles.loginText} onPress={() => onLoginButtonPress()}>
         Log in
       </Button>
       <Text style={styles.or}>OR</Text>
@@ -184,12 +159,7 @@ const LoginScreen: React.FC = (props) => {
         Login with Facebook
       </Button>
       {isLoading ? (
-        <ActivityIndicator
-          style={{marginTop: 30}}
-          size="large"
-          animating={isLoading}
-          color={AppStyles.color.tint}
-        />
+        <ActivityIndicator style={{ marginTop: 30 }} size="large" animating={isLoading} color={AppStyles.color.tint} />
       ) : (
         <GoogleSigninButton
           style={styles.googleContainer}

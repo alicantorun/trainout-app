@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import Button from 'react-native-button';
-import {Text, View, StyleSheet, Alert} from 'react-native';
-import {AppStyles} from '../AppStyles';
-import {AsyncStorage, ActivityIndicator} from 'react-native';
+import { Text, View, StyleSheet, Alert } from 'react-native';
+import { AppStyles } from '../AppStyles';
+import { ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import auth from '@react-native-firebase/auth';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
-import {useNavigation} from '@react-navigation/core';
+import { useNavigation } from '@react-navigation/core';
 
 const WelcomeScreen: React.FC = (props) => {
   const navigation = useNavigation();
@@ -22,12 +23,7 @@ const WelcomeScreen: React.FC = (props) => {
     const email = await AsyncStorage.getItem('@loggedInUserID:key');
     const password = await AsyncStorage.getItem('@loggedInUserID:password');
     const id = await AsyncStorage.getItem('@loggedInUserID:id');
-    if (
-      id != null &&
-      id.length > 0 &&
-      password != null &&
-      password.length > 0
-    ) {
+    if (id != null && id.length > 0 && password != null && password.length > 0) {
       auth()
         // TOOO
         .signInWithEmailAndPassword(email as any, password)
@@ -52,13 +48,13 @@ const WelcomeScreen: React.FC = (props) => {
               }
             })
             .catch(function (error) {
-              const {code, message} = error;
+              const { code, message } = error;
               Alert.alert(message);
             });
           setIsLoading(false);
         })
         .catch((error) => {
-          const {code, message} = error;
+          const { code, message } = error;
           Alert.alert(message);
           // For details of error codes, see the docs
           // The message contains the default Firebase string
@@ -66,9 +62,7 @@ const WelcomeScreen: React.FC = (props) => {
         });
       return;
     }
-    const fbToken = await AsyncStorage.getItem(
-      '@loggedInUserID:facebookCredentialAccessToken',
-    );
+    const fbToken = await AsyncStorage.getItem('@loggedInUserID:facebookCredentialAccessToken');
     if (id != null && id.length > 0 && fbToken != null && fbToken.length > 0) {
       const credential = firebase.auth.FacebookAuthProvider.credential(fbToken);
       auth()
@@ -95,13 +89,7 @@ const WelcomeScreen: React.FC = (props) => {
   };
 
   if (isLoading) {
-    return (
-      <ActivityIndicator
-        style={styles.spinner}
-        size="large"
-        color={AppStyles.color.tint}
-      />
-    );
+    return <ActivityIndicator style={styles.spinner} size="large" color={AppStyles.color.tint} />;
   }
 
   return (

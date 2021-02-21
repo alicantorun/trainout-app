@@ -1,19 +1,19 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 import auther from '@react-native-firebase/auth';
-import {AsyncStorage} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
-const initialAuthState = {isLoggedIn: false};
+const initialAuthState = { isLoggedIn: false };
 
 function auth(state = initialAuthState, action) {
   switch (action.type) {
     case 'Login':
-      return {...state, isLoggedIn: true, user: action.user};
+      return { ...state, isLoggedIn: true, user: action.user };
     case 'Logout':
       auther().signOut();
       AsyncStorage.removeItem('@loggedInUserID:id');
       AsyncStorage.removeItem('@loggedInUserID:key');
       AsyncStorage.removeItem('@loggedInUserID:password');
-      return {...state, isLoggedIn: false, user: {}};
+      return { ...state, isLoggedIn: false, user: {} };
     default:
       return state;
   }

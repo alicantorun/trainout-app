@@ -10,7 +10,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 import { useNavigation } from '@react-navigation/core';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 // import { User } from '../interfaces/interfaces';
 import { register } from '../../entities/auth/actions';
 import styles from './register.styles';

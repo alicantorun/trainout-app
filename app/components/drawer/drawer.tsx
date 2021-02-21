@@ -49,7 +49,8 @@ function Drawer(props) {
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         <TouchableOpacity style={styles.itemContainer} onPress={() => changeLanguageWithoutRTL()}>
           {drawerIcons.language}
-          <Text style={styles.itemText}>{i18('Drawer.changeLanguage')}</Text>
+          {/*  TODO */}
+          <Text style={styles.itemText as any}>{i18('Drawer.changeLanguage')}</Text>
         </TouchableOpacity>
         <Text onPress={() => dispatch(AuthActions.logout())}>LOGOUT</Text>
       </ScrollView>

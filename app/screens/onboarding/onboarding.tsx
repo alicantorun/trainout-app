@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import { withTheme } from 'react-native-paper';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { screens } from '../../config';
 import styles from './onboarding.styles';
 
@@ -59,14 +59,14 @@ const WalkThrough = (props) => {
   const _renderNextButton = () => {
     return (
       <View style={styles.buttonCircle}>
-        <Ionicons name="md-arrow-round-forward" color={colors.white} size={24} />
+        <MaterialIcons name="arrow-forward" color={colors.white} size={24} />
       </View>
     );
   };
   const _renderDoneButton = () => {
     return (
       <TouchableOpacity style={styles.buttonCircle} onPress={() => props.navigation.navigate(screens.authStack)}>
-        <Ionicons name="md-checkmark" color={colors.white} size={24} />
+        <MaterialIcons name="check" color={colors.white} size={24} />
       </TouchableOpacity>
     );
   };

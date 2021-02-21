@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View, Alert } from 'react-native';
 import { AccessToken, GraphRequest, GraphRequestManager, LoginManager } from 'react-native-fbsdk';
 import { withTheme } from 'react-native-paper';
 import styles from './facebook.styles';
@@ -67,7 +67,7 @@ function FacebookButton(props) {
       },
       function (error) {
         console.log('Login fail with error: ' + error);
-        alert('Login fail with error: ' + error);
+        Alert.alert('Login fail with error: ' + error);
       },
     );
   };

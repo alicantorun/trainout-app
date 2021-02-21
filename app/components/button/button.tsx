@@ -6,6 +6,8 @@ import styles from './button.styles';
 function AppButton(props) {
   return (
     <Button
+      accessibilityComponentType={Button}
+      accessibilityTraits={Button}
       labelStyle={[styles.label, { ...props.labelStyles }]}
       mode="contained"
       uppercase={false}

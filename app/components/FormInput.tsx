@@ -4,9 +4,20 @@ import { TextInput } from 'react-native-paper';
 
 const { width, height } = Dimensions.get('screen');
 
-export default function FormInput({ labelName, ...rest }) {
-  return <TextInput label={labelName} style={styles.input} numberOfLines={1} {...rest} />;
-}
+const FormInput = ({ labelName, ...rest }) => {
+  return (
+    <TextInput
+      accessibilityComponentType={FormInput}
+      accessibilityTraits={FormInput}
+      label={labelName}
+      style={styles.input}
+      numberOfLines={1}
+      {...rest}
+    />
+  );
+};
+
+export default FormInput;
 
 const styles = StyleSheet.create({
   input: {

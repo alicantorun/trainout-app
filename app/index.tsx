@@ -12,10 +12,8 @@ import { DropDownHolder, PushNotification } from './components';
 import AppNavigator from './navigation/root-stack';
 import AppStateProvider from './redux/provider';
 import { theme } from './theme';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { navigationRef } from './RootNavigation';
 
-Icon.loadFont();
 enableScreens();
 
 const App = () => {

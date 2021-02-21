@@ -12,7 +12,7 @@ function MenuHeader(props) {
       <TouchableOpacity onPress={() => props.navigation.toggleDrawer()}>
         <MaterialIcons name="menu" size={22} color="white" />
       </TouchableOpacity>
-      <Text style={[textStyle.heading, { color: 'white' }]}>{props.title}</Text>
+      <Text style={{ color: 'white' }}>{props.title}</Text>
       <View />
     </View>
   );

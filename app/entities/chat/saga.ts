@@ -43,44 +43,43 @@ function* createChatroomSaga({ payload }) {
 }
 
 function* getChatsSaga({ payload }) {
+  console.log('CHANNEL ACTIVATED');
   const ref = firestore().collection('THREADS');
   const channel = eventChannel((emit) => ref.onSnapshot(emit));
 
-  yield fork(closeGetChatsChannel, channel);
+  try {
+    while (true) {
+      const data = yield take(channel);
+      const threads = data.docs.map((documentSnapshot) => {
+        return {
+          _id: documentSnapshot.id,
+          // give defaults
+          name: '',
 
-  while (true) {
-    const data = yield take(channel);
-    const threads = data.docs.map((documentSnapshot) => {
-      return {
-        _id: documentSnapshot.id,
-        // give defaults
-        name: '',
+          latestMessage: {
+            text: '',
+          },
+          ...documentSnapshot.data(),
+        };
+      });
 
-        latestMessage: {
-          text: '',
-        },
-        ...documentSnapshot.data(),
-      };
-    });
-
-    yield put(Actions.getChats.success(threads));
+      yield put(Actions.getChats.success(threads));
+      console.log('CHANNEL UPDATED');
+    }
+  } finally {
+    channel.close();
+    console.log('CHANNEL CANCELLED');
   }
 
   // RootNavigation.navigate(screens.drawerStack);
-}
-
-function* closeGetChatsChannel(channel) {
-  while (true) {
-    yield take(Actions.stopGettingChats);
-    channel.close();
-  }
 }
 
 export default function* () {
   yield all([
     takeEvery(Actions.createChatRoom.request, createChatroomSaga),
     takeLatest(Actions.getChats.request, getChatsSaga),
-    takeLatest(Actions.stopGettingChats, closeGetChatsChannel),
+
+    startStopChannel(),
   ]);
 }
 

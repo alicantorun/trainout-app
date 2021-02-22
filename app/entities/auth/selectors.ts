@@ -1,6 +1,6 @@
-import { RootState } from '../../redux/reducers';
+import { RootState } from '../../store/reducers';
 
-import { selectAuthEntity } from '../../redux/selectors';
+import { selectAuthEntity } from '../../store/selectors';
 
 export const selectUser = (state: RootState) => selectAuthEntity(state).user;
 

@@ -10,7 +10,7 @@ import { enableScreens } from 'react-native-screens';
 import SplashScreen from 'react-native-splash-screen';
 import { DropDownHolder, PushNotification } from './components';
 import AppNavigator from './navigation/root-stack';
-import AppStateProvider from './redux/provider';
+import AppStateProvider from './store/provider';
 import { theme } from './theme';
 import { navigationRef } from './RootNavigation';
 

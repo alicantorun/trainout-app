@@ -18,50 +18,13 @@ export default function HomeScreen({ navigation }) {
   const threads = useSelector(selectChats);
   const isLoading = useSelector(selectIsLoading);
 
-  // console.log(threads);
-
-  // const [threads, setThreads] = useState([]);
-  // const [loading, setLoading] = useState(true);
-
-  /**
-   * Fetch threads from Firestore
-   */
-  // useEffect(() => {
-  //   const unsubscribe = firestore()
-  //     .collection('THREADS')
-  //     .orderBy('latestMessage.createdAt', 'desc')
-  //     .onSnapshot((querySnapshot) => {
-  //       const threads = querySnapshot.docs.map((documentSnapshot) => {
-  //         return {
-  //           _id: documentSnapshot.id,
-  //           // give defaults
-  //           name: '',
-
-  //           latestMessage: {
-  //             text: '',
-  //           },
-  //           ...documentSnapshot.data(),
-  //         };
-  //       });
-
-  //       setThreads(threads);
-
-  //       if (loading) {
-  //         setLoading(false);
-  //       }
-  //     });
-
-  //   /**
-  //    * unsubscribe listener
-  //    */
-  //   return () => unsubscribe();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   useEffect(() => {
     dispatch(getChats.request());
 
-    return () => stopGettingChats();
+    return () => {
+      console.log('un moiunting');
+      stopGettingChats();
+    };
   }, []);
 
   if (isLoading) {

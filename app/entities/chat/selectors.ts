@@ -1,6 +1,6 @@
-import { RootState } from '../../redux/reducers';
+import { RootState } from '../../store/reducers';
 
-import { selectChatEntity } from '../../redux/selectors';
+import { selectChatEntity } from '../../store/selectors';
 
 export const selectChats = (state: RootState) => selectChatEntity(state).threads;
 

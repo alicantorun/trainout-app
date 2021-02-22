@@ -6,10 +6,10 @@ import storage from 'redux-persist/lib/storage'; // defaults to localStorage for
 // import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'; //TODO decide for reconciliation later
 
 // Imports: Redux Root Reducer
-import { rootReducer } from '../reducers';
+import { rootReducer } from './reducers';
 
 // Imports: Redux Root Saga
-import rootSaga from '../sagas';
+import rootSaga from './sagas';
 
 // add the middlewares
 const middlewares = [];

@@ -1,45 +1,35 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { View, StyleSheet } from 'react-native';
 import { IconButton, Title } from 'react-native-paper';
-import firestore from '@react-native-firebase/firestore';
 import FormInput from '../../components/FormInput';
 import FormButton from '../../components/FormButton';
 import useStatsBar from '../../utils/useStatusBar';
 
 import styles from './createChatroom.styles';
+import { createChatRoom } from '../../entities/chat/actions';
 
 export default function AddRoomScreen({ navigation }) {
   useStatsBar('dark-content');
+  const dispatch = useDispatch();
   const [roomName, setRoomName] = useState('');
 
-  /**
-   * Create a new Firestore collection to save threads
-   */
   function handleButtonPress() {
     if (roomName.length > 0) {
-      firestore()
-        .collection('THREADS')
-        .add({
-          name: roomName,
-          latestMessage: {
-            text: `You have joined the room ${roomName}.`,
-            createdAt: new Date().getTime(),
-          },
-        })
-        .then((docRef) => {
-          docRef.collection('MESSAGES').add({
-            text: `You have joined the room ${roomName}.`,
-            createdAt: new Date().getTime(),
-            system: true,
-          });
-          navigation.navigate('Home');
-        });
+      dispatch(createChatRoom.request({ name: roomName }));
     }
   }
   return (
     <View style={styles.rootContainer}>
       <View style={styles.closeButtonContainer}>
-        <IconButton icon="close-circle" size={36} color="#6646ee" onPress={() => navigation.goBack()} />
+        <IconButton
+          accessibilityComponentType={IconButton}
+          accessibilityTraits={IconButton}
+          icon="close-circle"
+          size={36}
+          color="#6646ee"
+          onPress={() => navigation.goBack()}
+        />
       </View>
       <View style={styles.innerContainer}>
         <Title style={styles.title}>Create a new chat room</Title>

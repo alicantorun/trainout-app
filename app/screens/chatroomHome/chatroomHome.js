@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 import { List, Divider } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
@@ -7,49 +8,63 @@ import useStatsBar from '../../utils/useStatusBar';
 import FormButton from '../../components/FormButton';
 import { screens } from '../../config';
 import styles from './chatroomHome.styles';
+import { getChats, stopGettingChats } from '../../entities/chat/actions';
+import { selectChats, selectIsLoading } from '../../entities/chat/selectors';
 
 export default function HomeScreen({ navigation }) {
   useStatsBar('light-content');
 
-  const [threads, setThreads] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const threads = useSelector(selectChats);
+  const isLoading = useSelector(selectIsLoading);
+
+  // console.log(threads);
+
+  // const [threads, setThreads] = useState([]);
+  // const [loading, setLoading] = useState(true);
 
   /**
    * Fetch threads from Firestore
    */
+  // useEffect(() => {
+  //   const unsubscribe = firestore()
+  //     .collection('THREADS')
+  //     .orderBy('latestMessage.createdAt', 'desc')
+  //     .onSnapshot((querySnapshot) => {
+  //       const threads = querySnapshot.docs.map((documentSnapshot) => {
+  //         return {
+  //           _id: documentSnapshot.id,
+  //           // give defaults
+  //           name: '',
+
+  //           latestMessage: {
+  //             text: '',
+  //           },
+  //           ...documentSnapshot.data(),
+  //         };
+  //       });
+
+  //       setThreads(threads);
+
+  //       if (loading) {
+  //         setLoading(false);
+  //       }
+  //     });
+
+  //   /**
+  //    * unsubscribe listener
+  //    */
+  //   return () => unsubscribe();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
   useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('THREADS')
-      .orderBy('latestMessage.createdAt', 'desc')
-      .onSnapshot((querySnapshot) => {
-        const threads = querySnapshot.docs.map((documentSnapshot) => {
-          return {
-            _id: documentSnapshot.id,
-            // give defaults
-            name: '',
+    dispatch(getChats.request());
 
-            latestMessage: {
-              text: '',
-            },
-            ...documentSnapshot.data(),
-          };
-        });
-
-        setThreads(threads);
-
-        if (loading) {
-          setLoading(false);
-        }
-      });
-
-    /**
-     * unsubscribe listener
-     */
-    return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => stopGettingChats();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
   }
 

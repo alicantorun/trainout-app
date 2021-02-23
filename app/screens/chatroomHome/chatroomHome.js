@@ -22,14 +22,14 @@ export default function HomeScreen({ navigation }) {
     dispatch(getChats.request());
 
     return () => {
+      dispatch(stopGettingChats());
       console.log('un moiunting');
-      stopGettingChats();
     };
   }, []);
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  // if (isLoading) {
+  //   return <Loading />;
+  // }
 
   return (
     <View style={styles.container}>

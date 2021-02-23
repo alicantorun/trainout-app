@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { all, fork, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, call, cancel, fork, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 
 import firestore from '@react-native-firebase/firestore';
@@ -12,9 +12,6 @@ function* createChatroomSaga({ payload }) {
   const { name } = payload;
 
   try {
-    /**
-     * Create a new Firestore collection to save THREADS
-     */
     const result = yield firestore()
       .collection('THREADS')
       .add({
@@ -30,8 +27,6 @@ function* createChatroomSaga({ payload }) {
       createdAt: new Date().getTime(),
       system: true,
     });
-
-    // RootNavigation.navigate(screens.drawerStack);
   } catch (error) {
     Alert.alert(error);
     yield put(
@@ -53,9 +48,7 @@ function* getChatsSaga({ payload }) {
       const threads = data.docs.map((documentSnapshot) => {
         return {
           _id: documentSnapshot.id,
-          // give defaults
           name: '',
-
           latestMessage: {
             text: '',
           },
@@ -70,35 +63,119 @@ function* getChatsSaga({ payload }) {
     channel.close();
     console.log('CHANNEL CANCELLED');
   }
+}
 
-  // RootNavigation.navigate(screens.drawerStack);
+// saga
+function todosChannel() {
+  // firebase database ref
+  const ref = firestore().collection('THREADS');
+
+  const channel = eventChannel((emit) => ref.onSnapshot(emit));
+
+  return channel;
+}
+
+function* sync() {
+  const channel = yield call(todosChannel);
+
+  yield fork(function* () {
+    yield take(Actions.stopGettingChats);
+    channel.close();
+  });
+
+  try {
+    while (true) {
+      yield takeEvery(channel, function* (value: any) {
+        const threads = value?.docs?.map((documentSnapshot) => {
+          return {
+            _id: documentSnapshot.id,
+            name: '',
+            latestMessage: {
+              text: '',
+            },
+            ...documentSnapshot.data(),
+          };
+        });
+
+        console.log('threads', threads);
+        yield put(Actions.getChats.success({ threads }));
+      });
+      // console.log('VALUE', value);
+      // yield put(actions.syncTodos(value));
+    }
+  } catch (error) {
+    // yield put(actions.cancelWatch()); // to emit 'CANCEL_WATCH'
+    // yield put(actions.errorTodos(error));
+  }
+
+  // yield takeEvery(channel, function* (value: any) {
+  //   const threads = value?.docs?.map((documentSnapshot) => {
+  //     return {
+  //       _id: documentSnapshot.id,
+  //       name: '',
+  //       latestMessage: {
+  //         text: '',
+  //       },
+  //       ...documentSnapshot.data(),
+  //     };
+  //   });
+
+  //   console.log('threads', threads);
+  //   yield put(Actions.getChats.success({ threads }));
+  // });
+
+  // yield take(Actions.stopGettingChats);
+  // channel.close();
+}
+
+export function* listenToNewMessages(action) {
+  console.log('CHANNEL ACTIVATED');
+  const ref = firestore().collection('THREADS');
+  const channel = eventChannel((emit) => ref.onSnapshot(emit));
+
+  const incomingMessageEventChannel = channel;
+
+  // fork for closing the channel
+  yield fork(closeIncomingMessageEventChannel, incomingMessageEventChannel);
+
+  while (true) {
+    const item = yield take(incomingMessageEventChannel);
+    console.log('alicaaananana', item);
+    const threads = item?.docs?.map((documentSnapshot) => {
+      return {
+        _id: documentSnapshot.id,
+        name: '',
+        latestMessage: {
+          text: '',
+        },
+        ...documentSnapshot.data(),
+      };
+    });
+    console.log(' alicanaaaa', threads);
+    yield put(Actions.getChats.success(threads));
+  }
+}
+
+function* closeIncomingMessageEventChannel(incomingMessageEventChannel) {
+  while (true) {
+    yield take(Actions.stopGettingChats);
+    incomingMessageEventChannel.close();
+  }
+}
+
+export function* watchIncomingMessages() {
+  const incomingMessageChannel = yield takeEvery(Actions.getChats.request, listenToNewMessages);
+  yield take(Actions.stopGettingChats);
+  yield cancel(incomingMessageChannel);
 }
 
 export default function* () {
-  yield all([
-    takeEvery(Actions.createChatRoom.request, createChatroomSaga),
-    takeLatest(Actions.getChats.request, getChatsSaga),
+  // yield fork(Actions.getChats.request, sync);
 
-    startStopChannel(),
+  yield all([
+    // takeEvery(Actions.createChatRoom.request, createChatroomSaga),
+    // takeLatest(Actions.getChats.request, getChatsSaga),
+    // startStopChannel(),
+    watchIncomingMessages(),
   ]);
 }
-
-// import firebase from 'react-native-firebase';
-// const RSF = new ReduxSagaFirebase(firebase);
-// export function* watchSquadChannel(userData) {
-//   try {
-//     yield put(syncSquadLoading());
-//     const channel = RSF.firestore.channel('collectionName/documentName', 'document');
-//     while (true) {
-//       const response = yield take(channel);
-//       const {
-//         _data: {
-//           event: { data },
-//         },
-//       } = response;
-//       yield put(syncSquadSuccess(data));
-//     }
-//   } catch (error) {
-//     yield put(syncSquadFailure(error));
-//   }
-// }

@@ -2,8 +2,9 @@ import { applyMiddleware, createStore } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web and AsyncStorage for react-native
+
 // import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'; //TODO decide for reconciliation later
+import AsyncStorage from '@react-native-community/async-storage';
 
 // Imports: Redux Root Reducer
 import { rootReducer } from './reducers';
@@ -23,7 +24,7 @@ const middleware = applyMiddleware(...middlewares);
 
 const persistConfig = {
   key: 'root',
-  storage,
+  storage: AsyncStorage,
   blacklist: ['loading'],
 };
 

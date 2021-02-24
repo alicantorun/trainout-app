@@ -29,6 +29,8 @@ const LoginScreen = () => {
       return;
     }
 
+    console.log(email, password);
+
     dispatch(login.request({ email, password }));
   };
 

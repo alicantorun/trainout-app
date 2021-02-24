@@ -3,42 +3,54 @@ import { getType } from 'typesafe-actions';
 import * as Actions from './actions';
 
 const initialState = {
-  threads: [],
+  chatrooms: [],
+  currentChatroom: undefined,
+  messages: undefined,
   isLoading: false,
 };
 
 export default function (state = initialState, action: Actions.AuthActions) {
   switch (action.type) {
-    case getType(Actions.createChatRoom.request):
+    case getType(Actions.createChatroom.request):
       return {
         ...state,
         isLoading: true,
       };
-    case getType(Actions.createChatRoom.success):
+    case getType(Actions.createChatroom.success):
       return {
         ...state,
         isLoading: false,
       };
-    case getType(Actions.createChatRoom.failure):
+    case getType(Actions.createChatroom.failure):
       return {
         ...state,
         isLoading: false,
       };
-    case getType(Actions.getChats.success):
+    case getType(Actions.getChatrooms.success):
       return {
         ...state,
         isLoading: false,
-        threads: action.payload,
+        chatrooms: action.payload,
       };
-    case getType(Actions.getChats.request):
+    case getType(Actions.getChatrooms.request):
       return {
         ...state,
         isLoading: true,
       };
-    case getType(Actions.getChats.failure):
+    case getType(Actions.getChatrooms.failure):
       return {
         ...state,
         isLoading: true,
+      };
+    case getType(Actions.setCurrentChatroom):
+      return {
+        ...state,
+        currentChatroom: action.payload,
+      };
+    case getType(Actions.getMessages.success):
+      return {
+        ...state,
+        messages: action.payload,
       };
     default:
       return state;

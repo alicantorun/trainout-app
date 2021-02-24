@@ -42,7 +42,7 @@ const AppNavigator = () => {
 
   return (
     <RootStack.Navigator headerMode="none">
-      {user ? (
+      {!user ? (
         <>
           <RootStack.Screen name={screens.onboardingStack} component={OnboardingStack} />
           <RootStack.Screen name={screens.authStack} component={AuthStack} />

@@ -12,7 +12,13 @@ import { DropDownHolder, PushNotification } from './components';
 import AppNavigator from './navigation/root-stack';
 import AppStateProvider from './store/provider';
 import { theme } from './theme';
-import { navigationRef } from './RootNavigation';
+import { navigationRef } from './navigation/RootNavigation';
+import ErrorBoundary from 'react-native-error-boundary';
+import { GoogleSignin } from '@react-native-community/google-signin';
+
+GoogleSignin.configure({
+  webClientId: '325900303912-7s7c58iahbcm94isl3m28kjg30dr0raa.apps.googleusercontent.com',
+});
 
 enableScreens();
 
@@ -24,23 +30,28 @@ const App = () => {
     }
   }, []);
 
+  const errorHandler = (error: Error, stackTrace: string) => {
+    console.log('error: ', error, 'stackTrace: ', stackTrace);
+  };
+
   return (
-    <Suspense fallback={null}>
-      <Root>
-        <SafeAreaView style={styles.container}>
-          <PaperProvider>
-            <AppStateProvider>
-              {/* // TODO */}
-              <NavigationContainer theme={theme as any} ref={navigationRef}>
-                <AppNavigator />
-                <PushNotification />
-                <DropdownAlert ref={(ref) => DropDownHolder.setDropDown(ref)} />
-              </NavigationContainer>
-            </AppStateProvider>
-          </PaperProvider>
-        </SafeAreaView>
-      </Root>
-    </Suspense>
+    <ErrorBoundary onError={errorHandler}>
+      <Suspense fallback={null}>
+        <Root>
+          <SafeAreaView style={styles.container}>
+            <PaperProvider>
+              <AppStateProvider>
+                <NavigationContainer theme={theme as any} ref={navigationRef}>
+                  <AppNavigator />
+                  <PushNotification />
+                  <DropdownAlert ref={(ref) => DropDownHolder.setDropDown(ref)} />
+                </NavigationContainer>
+              </AppStateProvider>
+            </PaperProvider>
+          </SafeAreaView>
+        </Root>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

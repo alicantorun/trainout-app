@@ -1,11 +1,9 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import { all, call, cancel, fork, put, take, takeEvery, takeLatest, select } from 'redux-saga/effects';
+import { all, cancel, fork, put, take, takeEvery, select } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import * as AuthSelectors from '../auth/selectors';
 import * as ChatSelectors from '../chat/selectors';
 import firestore from '@react-native-firebase/firestore';
 
-import { Alert } from 'react-native';
 import * as Actions from './actions';
 
 function* createChatroomSaga({ payload }) {
@@ -28,12 +26,7 @@ function* createChatroomSaga({ payload }) {
       system: true,
     });
   } catch (error) {
-    // Alert.alert(error);
-    // yield put(
-    //   Actions.createChatroom.failure({
-    //     error: error ? error : 'Message failed to send',
-    //   }),
-    // );
+    console.log(error);
   }
 }
 
@@ -71,12 +64,6 @@ function* sendMessageSaga({ payload }) {
         { merge: true },
       );
   } catch (error) {
-    // Alert.alert(error);
-    // yield put(
-    //   Actions.sendMessage.failure({
-    //     error: error ? error : 'Message failed to send',
-    //   }),
-    // );
     console.log(error);
   }
 }
@@ -152,8 +139,6 @@ export function* listenToMessages() {
 
       return data;
     });
-
-    console.log(messages);
 
     yield put(Actions.getMessages.success(messages));
   }

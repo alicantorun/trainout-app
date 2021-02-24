@@ -12,7 +12,7 @@ export const register = createAsyncAction(
   'entities/auth/login/request',
   'entities/auth/login/success',
   'entities/auth/login/failure',
-)<{ email: string; password: string }, { user: any; token?: any }, { error: Error }>();
+)<{ email: string; password: string; name: string; surname: string }, { user: any; token?: any }, { error: Error }>();
 
 export const facebookLogin = createAsyncAction(
   'entities/auth/facebook-login/request',

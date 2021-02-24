@@ -40,7 +40,7 @@ const WalkThrough = (props) => {
     return (
       <View style={styles.itemContainer}>
         {index < 2 && (
-          <TouchableOpacity style={styles.skip} onPress={() => props.navigation.navigate(screens.drawerStack)}>
+          <TouchableOpacity style={styles.skip} onPress={() => props.navigation.navigate(screens.authStack)}>
             <Text
               style={{
                 color: colors.primary,

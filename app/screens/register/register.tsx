@@ -20,8 +20,8 @@ const SignupScreen: React.FC = (props) => {
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = React.useState(true);
-  const [fullname, setFullname] = React.useState('');
-  const [phone, setPhone] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [surname, setSurname] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [user, setUser] = React.useState(null);
@@ -45,7 +45,7 @@ const SignupScreen: React.FC = (props) => {
       return;
     }
 
-    dispatch(register.request({ email, password }));
+    dispatch(register.request({ email, password, name, surname }));
   };
 
   return (
@@ -68,6 +68,28 @@ const SignupScreen: React.FC = (props) => {
           secureTextEntry={true}
           onChangeText={(text) => setPassword(text)}
           value={password}
+          //   placeholderTextColor={AppStyles.color.grey}
+          underlineColorAndroid="transparent"
+        />
+      </View>
+      <View style={styles.InputContainer}>
+        <TextInput
+          style={styles.body}
+          placeholder="Name"
+          secureTextEntry={true}
+          onChangeText={(text) => setName(text)}
+          value={name}
+          //   placeholderTextColor={AppStyles.color.grey}
+          underlineColorAndroid="transparent"
+        />
+      </View>
+      <View style={styles.InputContainer}>
+        <TextInput
+          style={styles.body}
+          placeholder="Surname"
+          secureTextEntry={true}
+          onChangeText={(text) => setSurname(text)}
+          value={surname}
           //   placeholderTextColor={AppStyles.color.grey}
           underlineColorAndroid="transparent"
         />

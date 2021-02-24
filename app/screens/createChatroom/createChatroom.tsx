@@ -4,19 +4,17 @@ import { View, StyleSheet } from 'react-native';
 import { IconButton, Title } from 'react-native-paper';
 import FormInput from '../../components/FormInput';
 import FormButton from '../../components/FormButton';
-import useStatsBar from '../../utils/useStatusBar';
 
 import styles from './createChatroom.styles';
-import { createChatRoom } from '../../entities/chat/actions';
+import { createChatroom } from '../../entities/chat/actions';
 
 export default function AddRoomScreen({ navigation }) {
-  useStatsBar('dark-content');
   const dispatch = useDispatch();
   const [roomName, setRoomName] = useState('');
 
   function handleButtonPress() {
     if (roomName.length > 0) {
-      dispatch(createChatRoom.request({ name: roomName }));
+      dispatch(createChatroom.request({ name: roomName }));
     }
   }
   return (

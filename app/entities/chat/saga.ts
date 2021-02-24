@@ -1,19 +1,19 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { all, call, cancel, fork, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, call, cancel, fork, put, take, takeEvery, takeLatest, select } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
-
+import * as AuthSelectors from '../auth/selectors';
+import * as ChatSelectors from '../chat/selectors';
 import firestore from '@react-native-firebase/firestore';
 
 import { Alert } from 'react-native';
 import * as Actions from './actions';
-import * as RootNavigation from '../../RootNavigation';
 
 function* createChatroomSaga({ payload }) {
   const { name } = payload;
 
   try {
     const result = yield firestore()
-      .collection('THREADS')
+      .collection('CHATROOMS')
       .add({
         name,
         latestMessage: {
@@ -30,118 +30,62 @@ function* createChatroomSaga({ payload }) {
   } catch (error) {
     Alert.alert(error);
     yield put(
-      Actions.createChatRoom.failure({
+      Actions.createChatroom.failure({
         error: error ? error : 'Message failed to send',
       }),
     );
   }
 }
 
-function* getChatsSaga({ payload }) {
-  console.log('CHANNEL ACTIVATED');
-  const ref = firestore().collection('THREADS');
-  const channel = eventChannel((emit) => ref.onSnapshot(emit));
+function* sendMessageSaga({ payload }) {
+  const { message } = payload;
+  const user = yield select(AuthSelectors.selectUser);
+  const chatroom = yield select(ChatSelectors.selectCurrentChatroom);
 
   try {
-    while (true) {
-      const data = yield take(channel);
-      const threads = data.docs.map((documentSnapshot) => {
-        return {
-          _id: documentSnapshot.id,
-          name: '',
+    yield firestore()
+      .collection('CHATROOMS')
+      .doc(chatroom._id)
+      .collection('MESSAGES')
+      .add({
+        text: message.text,
+        createdAt: new Date().getTime(),
+        user: {
+          _id: user.uid,
+          email: user.email,
+        },
+      });
+
+    yield firestore()
+      .collection('CHATROOMS')
+      .doc(chatroom._id)
+      .set(
+        {
           latestMessage: {
-            text: '',
+            text: message.text,
+            createdAt: new Date().getTime(),
           },
-          ...documentSnapshot.data(),
-        };
-      });
-
-      yield put(Actions.getChats.success(threads));
-      console.log('CHANNEL UPDATED');
-    }
-  } finally {
-    channel.close();
-    console.log('CHANNEL CANCELLED');
-  }
-}
-
-// saga
-function todosChannel() {
-  // firebase database ref
-  const ref = firestore().collection('THREADS');
-
-  const channel = eventChannel((emit) => ref.onSnapshot(emit));
-
-  return channel;
-}
-
-function* sync() {
-  const channel = yield call(todosChannel);
-
-  yield fork(function* () {
-    yield take(Actions.stopGettingChats);
-    channel.close();
-  });
-
-  try {
-    while (true) {
-      yield takeEvery(channel, function* (value: any) {
-        const threads = value?.docs?.map((documentSnapshot) => {
-          return {
-            _id: documentSnapshot.id,
-            name: '',
-            latestMessage: {
-              text: '',
-            },
-            ...documentSnapshot.data(),
-          };
-        });
-
-        console.log('threads', threads);
-        yield put(Actions.getChats.success({ threads }));
-      });
-      // console.log('VALUE', value);
-      // yield put(actions.syncTodos(value));
-    }
+        },
+        { merge: true },
+      );
   } catch (error) {
-    // yield put(actions.cancelWatch()); // to emit 'CANCEL_WATCH'
-    // yield put(actions.errorTodos(error));
+    Alert.alert(error);
+    yield put(
+      Actions.sendMessage.failure({
+        error: error ? error : 'Message failed to send',
+      }),
+    );
   }
-
-  // yield takeEvery(channel, function* (value: any) {
-  //   const threads = value?.docs?.map((documentSnapshot) => {
-  //     return {
-  //       _id: documentSnapshot.id,
-  //       name: '',
-  //       latestMessage: {
-  //         text: '',
-  //       },
-  //       ...documentSnapshot.data(),
-  //     };
-  //   });
-
-  //   console.log('threads', threads);
-  //   yield put(Actions.getChats.success({ threads }));
-  // });
-
-  // yield take(Actions.stopGettingChats);
-  // channel.close();
 }
 
-export function* listenToNewMessages(action) {
-  console.log('CHANNEL ACTIVATED');
-  const ref = firestore().collection('THREADS');
-  const channel = eventChannel((emit) => ref.onSnapshot(emit));
+export function* listenToNewChatroom() {
+  const incomingChatroomEventChannel = eventChannel((emit) => firestore().collection('CHATROOMS').onSnapshot(emit));
 
-  const incomingMessageEventChannel = channel;
-
-  // fork for closing the channel
-  yield fork(closeIncomingMessageEventChannel, incomingMessageEventChannel);
+  yield fork(closeIncomingChatroomEventChannel, incomingChatroomEventChannel);
 
   while (true) {
-    const item = yield take(incomingMessageEventChannel);
-    console.log('alicaaananana', item);
-    const threads = item?.docs?.map((documentSnapshot) => {
+    const querySnapshot = yield take(incomingChatroomEventChannel);
+    const chatrooms = querySnapshot?.docs?.map((documentSnapshot) => {
       return {
         _id: documentSnapshot.id,
         name: '',
@@ -151,31 +95,84 @@ export function* listenToNewMessages(action) {
         ...documentSnapshot.data(),
       };
     });
-    console.log(' alicanaaaa', threads);
-    yield put(Actions.getChats.success(threads));
+    yield put(Actions.getChatrooms.success(chatrooms));
   }
 }
 
-function* closeIncomingMessageEventChannel(incomingMessageEventChannel) {
+function* closeIncomingChatroomEventChannel(incomingChatroomEventChannel) {
   while (true) {
-    yield take(Actions.stopGettingChats);
-    incomingMessageEventChannel.close();
+    yield take(Actions.stopGetChatrooms);
+    incomingChatroomEventChannel.close();
+  }
+}
+
+export function* watchIncomingChatrooms() {
+  while (true) {
+    const incomingChatroomChannel = yield takeEvery(Actions.getChatrooms.request, listenToNewChatroom);
+    yield take(Actions.stopGetChatrooms);
+    yield cancel(incomingChatroomChannel);
+  }
+}
+
+export function* listenToMessages() {
+  const chatroom = yield select(ChatSelectors.selectCurrentChatroom);
+
+  const incomingMessagesEventChannel = eventChannel((emit) =>
+    firestore()
+      .collection('CHATROOMS')
+      .doc(chatroom._id)
+      .collection('MESSAGES')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(emit),
+  );
+
+  yield fork(closeIncomingMessagesEventChannel, incomingMessagesEventChannel);
+
+  while (true) {
+    const querySnapshot = yield take(incomingMessagesEventChannel);
+    const messages = querySnapshot?.docs.map((doc) => {
+      const firebaseData = doc.data();
+
+      const data = {
+        _id: doc.id,
+        text: '',
+        createdAt: new Date().getTime(),
+        ...firebaseData,
+      };
+
+      if (!firebaseData.system) {
+        data.user = {
+          ...firebaseData.user,
+          name: firebaseData.user.email,
+        };
+      }
+
+      return data;
+    });
+
+    yield put(Actions.getMessages.success(messages));
+  }
+}
+
+function* closeIncomingMessagesEventChannel(incomingMessagesEventChannel) {
+  while (true) {
+    yield take(Actions.stopGetMessages);
+    incomingMessagesEventChannel.close();
   }
 }
 
 export function* watchIncomingMessages() {
-  const incomingMessageChannel = yield takeEvery(Actions.getChats.request, listenToNewMessages);
-  yield take(Actions.stopGettingChats);
-  yield cancel(incomingMessageChannel);
+  while (true) {
+    const incomingMessagesChannel = yield takeEvery(Actions.getMessages.request, listenToMessages);
+    yield take(Actions.stopGetMessages);
+    yield cancel(incomingMessagesChannel);
+  }
 }
 
 export default function* () {
-  // yield fork(Actions.getChats.request, sync);
-
   yield all([
-    // takeEvery(Actions.createChatRoom.request, createChatroomSaga),
-    // takeLatest(Actions.getChats.request, getChatsSaga),
-    // startStopChannel(),
-    watchIncomingMessages(),
+    takeEvery(Actions.createChatroom.request, createChatroomSaga),
+    takeEvery(Actions.sendMessage.request, sendMessageSaga),
+    watchIncomingChatrooms(),
   ]);
 }

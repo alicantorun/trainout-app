@@ -1,17 +1,35 @@
 import { ActionType, createAction, createAsyncAction } from 'typesafe-actions';
 
-export const createChatRoom = createAsyncAction(
+export const createChatroom = createAsyncAction(
   'entities/chat/create-chat-room/request',
   'entities/chat/create-chat-room/success',
   'entities/chat/create-chat-room/failure',
 )<{ name: string }, {}, { error: Error }>();
 
-export const getChats = createAsyncAction(
+export const sendMessage = createAsyncAction(
+  'entities/chat/send-message/request',
+  'entities/chat/send-message/success',
+  'entities/chat/send-message/failure',
+)<{ message: any }, {}, { error: Error }>();
+
+export const getMessages = createAsyncAction(
+  'entities/chat/get-messages/request',
+  'entities/chat/get-messages/success',
+  'entities/chat/get-messages/failure',
+)<{}, { message: any }, { error: Error }>();
+
+export const getChatrooms = createAsyncAction(
   'entities/chat/get-threads/request',
   'entities/chat/get-threads/success',
   'entities/chat/get-threads/failure',
-)<{}, { threads: any }, { error: Error }>();
+)<{}, { chatrooms: any }, { error: Error }>();
 
-export const stopGettingChats = createAction('entities/auth/stop-getting-chats')();
+export const stopGetChatrooms = createAction('entities/chat/stop-get-chatroom')();
 
-export type AuthActions = ActionType<typeof createChatRoom | typeof getChats | typeof stopGettingChats>;
+export const stopGetMessages = createAction('entities/chat/stop-get-messages')();
+
+export const setCurrentChatroom = createAction('entities/chat/set-current-chatroom')<{ chatroom: any }>();
+
+export type AuthActions = ActionType<
+  typeof createChatroom | typeof getChatrooms | typeof stopGetChatrooms | typeof setCurrentChatroom | typeof getMessages
+>;

@@ -1,12 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { GiftedChat, Bubble, Send, SystemMessage } from 'react-native-gifted-chat';
 
 import { ActivityIndicator, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
-
-import firestore from '@react-native-firebase/firestore';
-import useStatsBar from '../../utils/useStatusBar';
 
 import * as ChatActions from '../../entities/chat/actions';
 import * as ChatSelectors from '../../entities/chat/selectors';
@@ -14,18 +11,27 @@ import * as AuthSelectors from '../../entities/auth/selectors';
 
 import styles from './chatroom.styles';
 
-export default function RoomScreen({ route }) {
+export default function RoomScreen({}) {
   const dispatch = useDispatch();
 
-  const chatroom = useSelector(ChatSelectors.selectCurrentChatroom);
   const messages = useSelector(ChatSelectors.selectMessages);
 
+  // console.log('MOUNT messages: ', messages);
+
   const user = useSelector(AuthSelectors.selectUser);
-  console.log(user);
+  // console.log(user);
 
   useEffect(() => {
-    dispatch(ChatActions.getMessages.request());
+    dispatch(ChatActions.getMessages.request({}));
+
+    return () => {
+      dispatch(ChatActions.stopGetMessages());
+    };
   }, []);
+
+  const handleSend = (messages) => {
+    dispatch(ChatActions.sendMessage.request(messages));
+  };
 
   function renderBubble(props) {
     return (
@@ -78,9 +84,7 @@ export default function RoomScreen({ route }) {
   return (
     <GiftedChat
       messages={messages}
-      onSend={() => {
-        dispatch(ChatActions.sendMessage.request(messages));
-      }}
+      onSend={handleSend}
       user={{ _id: user.uid }}
       placeholder="Type your message here..."
       alwaysShowSend

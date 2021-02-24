@@ -28,17 +28,19 @@ function* createChatroomSaga({ payload }) {
       system: true,
     });
   } catch (error) {
-    Alert.alert(error);
-    yield put(
-      Actions.createChatroom.failure({
-        error: error ? error : 'Message failed to send',
-      }),
-    );
+    // Alert.alert(error);
+    // yield put(
+    //   Actions.createChatroom.failure({
+    //     error: error ? error : 'Message failed to send',
+    //   }),
+    // );
   }
 }
 
 function* sendMessageSaga({ payload }) {
-  const { message } = payload;
+  const message = payload;
+  const text = message[0].text;
+
   const user = yield select(AuthSelectors.selectUser);
   const chatroom = yield select(ChatSelectors.selectCurrentChatroom);
 
@@ -48,7 +50,7 @@ function* sendMessageSaga({ payload }) {
       .doc(chatroom._id)
       .collection('MESSAGES')
       .add({
-        text: message.text,
+        text: text,
         createdAt: new Date().getTime(),
         user: {
           _id: user.uid,
@@ -62,19 +64,20 @@ function* sendMessageSaga({ payload }) {
       .set(
         {
           latestMessage: {
-            text: message.text,
+            text: text,
             createdAt: new Date().getTime(),
           },
         },
         { merge: true },
       );
   } catch (error) {
-    Alert.alert(error);
-    yield put(
-      Actions.sendMessage.failure({
-        error: error ? error : 'Message failed to send',
-      }),
-    );
+    // Alert.alert(error);
+    // yield put(
+    //   Actions.sendMessage.failure({
+    //     error: error ? error : 'Message failed to send',
+    //   }),
+    // );
+    console.log(error);
   }
 }
 
@@ -130,11 +133,11 @@ export function* listenToMessages() {
 
   while (true) {
     const querySnapshot = yield take(incomingMessagesEventChannel);
-    const messages = querySnapshot?.docs.map((doc) => {
-      const firebaseData = doc.data();
+    const messages = querySnapshot?.docs.map((documentSnapshot) => {
+      const firebaseData = documentSnapshot.data();
 
       const data = {
-        _id: doc.id,
+        _id: documentSnapshot.id,
         text: '',
         createdAt: new Date().getTime(),
         ...firebaseData,
@@ -149,6 +152,8 @@ export function* listenToMessages() {
 
       return data;
     });
+
+    console.log(messages);
 
     yield put(Actions.getMessages.success(messages));
   }
@@ -174,5 +179,6 @@ export default function* () {
     takeEvery(Actions.createChatroom.request, createChatroomSaga),
     takeEvery(Actions.sendMessage.request, sendMessageSaga),
     watchIncomingChatrooms(),
+    watchIncomingMessages(),
   ]);
 }

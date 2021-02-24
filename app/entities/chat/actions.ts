@@ -19,9 +19,9 @@ export const getMessages = createAsyncAction(
 )<{}, { message: any }, { error: Error }>();
 
 export const getChatrooms = createAsyncAction(
-  'entities/chat/get-threads/request',
-  'entities/chat/get-threads/success',
-  'entities/chat/get-threads/failure',
+  'entities/chat/get-chatrooms/request',
+  'entities/chat/get-chatrooms/success',
+  'entities/chat/get-chatrooms/failure',
 )<{}, { chatrooms: any }, { error: Error }>();
 
 export const stopGetChatrooms = createAction('entities/chat/stop-get-chatroom')();

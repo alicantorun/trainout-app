@@ -21,10 +21,6 @@ function* loginSaga({ payload }) {
     const user = result.user;
     let user_uid = user.uid;
 
-    AsyncStorage.setItem('@loggedInUserID:id', user_uid);
-    AsyncStorage.setItem('@loggedInUserID:key', email);
-    AsyncStorage.setItem('@loggedInUserID:password', password);
-
     yield put(
       Actions.login.success({
         user: user,
@@ -46,10 +42,6 @@ function* loginSaga({ payload }) {
 function* logoutSaga() {
   try {
     yield auth().signOut();
-
-    AsyncStorage.setItem('@loggedInUserID:id', null);
-    AsyncStorage.setItem('@loggedInUserID:key', null);
-    AsyncStorage.setItem('@loggedInUserID:password', null);
 
     // RootNavigation.navigate(screens.drawerStack);
   } catch (error) {
@@ -77,8 +69,6 @@ function* facebookLoginSaga({}) {
 
     console.log(user);
 
-    AsyncStorage.setItem('@loggedInUserID:facebookCredentialAccessToken', accessToken);
-    AsyncStorage.setItem('@loggedInUserID:id', user.uid);
     const userDict = {
       id: user.uid,
       fullname: user.displayName,
@@ -115,11 +105,8 @@ function* googleLoginSaga({}) {
 
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
-    AsyncStorage.setItem('@loggedInUserID:googleCredentialAccessToken', idToken);
-
     const { user } = yield auth().signInWithCredential(googleCredential);
 
-    AsyncStorage.setItem('@loggedInUserID:id', user.uid);
     const userDict = {
       id: user.uid,
       fullname: user.displayName,
@@ -155,10 +142,6 @@ function* registerSaga({ payload }) {
     const result = yield auth().createUserWithEmailAndPassword(email, password);
 
     const user = result.user;
-
-    AsyncStorage.setItem('@loggedInUserID:id', user.uid);
-    AsyncStorage.setItem('@loggedInUserID:key', email);
-    AsyncStorage.setItem('@loggedInUserID:password', password);
 
     // const userDict = {
     //   id: user.uid,
